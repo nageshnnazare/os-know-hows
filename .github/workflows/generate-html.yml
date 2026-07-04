@@ -1,0 +1,42 @@
+name: Generate index.html
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-commit:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'Generate index.html')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Download htmler script
+        run: |
+          wget -q -O htmler.sh https://raw.githubusercontent.com/nageshnnazare/htmler/refs/heads/main/htmler.sh
+          chmod +x htmler.sh
+
+      - name: Generate index.html
+        run: ./htmler.sh -o index.html
+
+      - name: Commit index.html if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Generate index.html"
+            git pull --rebase
+            git push
+          else
+            echo "No changes to index.html"
+          fi
