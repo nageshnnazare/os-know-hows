@@ -2,12 +2,15 @@
 
 ## Table of Contents
 1. [Basic Concepts](#basic-concepts)
-2. [Scheduling Criteria](#scheduling-criteria)
-3. [Scheduling Algorithms](#scheduling-algorithms)
-4. [Multi-Level Queue Scheduling](#multi-level-queue-scheduling)
-5. [Thread Scheduling](#thread-scheduling)
-6. [Real-Time Scheduling](#real-time-scheduling)
-7. [Algorithm Evaluation](#algorithm-evaluation)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Scheduling Criteria](#scheduling-criteria)
+4. [Scheduling Algorithms](#scheduling-algorithms)
+5. [Worked Gantt Chart Numerical Examples](#worked-gantt-chart-numerical-examples)
+6. [Multi-Level Queue & MLFQ Scheduling](#multi-level-queue--mlfq-scheduling)
+7. [Thread Scheduling](#thread-scheduling)
+8. [Real-Time Scheduling & Math](#real-time-scheduling--math)
+9. [Algorithm Evaluation](#algorithm-evaluation)
+10. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
@@ -16,6 +19,21 @@
 ### CPU-I/O Burst Cycle
 
 Process execution consists of alternating CPU and I/O bursts.
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Air Traffic Controller & Airport Runway**
+> - The **CPU** is a single **Airport Runway**.
+> - **Processes** are **Airplane Flights** waiting to land or take off.
+> - The **CPU Scheduler** is the **Air Traffic Controller**.
+> - **First-Come, First-Served (FCFS)**: Planes land in strict arrival order. If a massive 500-passenger jumbo jet takes 30 minutes to taxi, 5 small nimble private jets must sit idle in the sky burning fuel (**Convoy Effect**).
+> - **Shortest Job First (SJF)**: Quick private jets go first so average wait time plummets. However, if endless private jets keep arriving, jumbo jets never get to land (**Starvation**).
+> - **Round Robin (RR)**: Each plane gets 2 minutes on the runway before yielding to the next. Great for fair turn-around and fast response, but switching planes every 5 seconds wastes time (**Context Switch Overhead**).
+
+---
 
 ![Alternating CPU and I/O bursts](figures/cpu-io-burst.svg)
 
@@ -1144,6 +1162,68 @@ Modern systems use both push and pull
 
 ---
 
+## Worked Gantt Chart Numerical Examples
+
+Let's trace a process set through multiple algorithms:
+- **Process Data**:
+  - $P_1$: Arrival = 0, Burst = 6
+  - $P_2$: Arrival = 1, Burst = 2
+  - $P_3$: Arrival = 2, Burst = 8
+  - $P_4$: Arrival = 3, Burst = 3
+
+### 1. FCFS (First-Come, First-Served)
+
+```
+Gantt Chart:
+|    P1 (0-6)    |  P2 (6-8)  |     P3 (8-16)    |  P4 (16-19)  |
+0                6            8                  16             19
+
+Calculations:
+- P1: Completion = 6,  Turnaround = 6 - 0 = 6,  Waiting = 6 - 6 = 0
+- P2: Completion = 8,  Turnaround = 8 - 1 = 7,  Waiting = 7 - 2 = 5
+- P3: Completion = 16, Turnaround = 16 - 2 = 14, Waiting = 14 - 8 = 6
+- P4: Completion = 19, Turnaround = 19 - 3 = 16, Waiting = 16 - 3 = 13
+
+Average Turnaround Time = (6 + 7 + 14 + 16) / 4 = 10.75 units
+Average Waiting Time    = (0 + 5 + 6 + 13) / 4   = 6.00 units
+```
+
+### 2. SRTF (Shortest Remaining Time First - Preemptive SJF)
+
+```
+Gantt Chart:
+| P1 | P2  | P4  | P1   |    P3      |
+0    1     3     6      11           19
+
+Detailed Execution Log:
+- t=0: P1 arrives (rem 6). Executes.
+- t=1: P2 arrives (rem 2). P2 burst (2) < P1 remaining (5). Preempt P1! P2 executes.
+- t=3: P2 finishes. P4 arrives (rem 3), P3 arrives (rem 8). P4 has shortest remaining (3). P4 executes.
+- t=6: P4 finishes. P1 remaining (5) < P3 remaining (8). P1 executes.
+- t=11: P1 finishes. P3 executes to completion at t=19.
+
+Calculations:
+- P1: Completion = 11, Turnaround = 11 - 0 = 11, Waiting = 11 - 6 = 5
+- P2: Completion = 3,  Turnaround = 3 - 1 = 2,   Waiting = 2 - 2 = 0
+- P3: Completion = 19, Turnaround = 19 - 2 = 17, Waiting = 17 - 8 = 9
+- P4: Completion = 6,  Turnaround = 6 - 3 = 3,   Waiting = 3 - 3 = 0
+
+Average Turnaround Time = (11 + 2 + 17 + 3) / 4 = 8.25 units
+Average Waiting Time    = (5 + 0 + 9 + 0) / 4   = 3.50 units
+```
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is the Convoy Effect in CPU scheduling, and which algorithm exhibits it?
+**Answer**: The **Convoy Effect** occurs in **First-Come, First-Served (FCFS)** scheduling when a single CPU-bound process with a long burst time occupies the CPU, causing many short I/O-bound processes to queue up behind it. This severely degrades overall device utilization and interactive response times.
+
+### Question 2: Explain why Shortest Job First (SJF) is provably optimal for minimizing average waiting time, yet difficult to implement in general-purpose OS kernels.
+**Answer**: SJF is optimal because moving shorter processes ahead of longer processes reduces the waiting time of the shorter processes by more than it increases the waiting time of the longer process. However, it is difficult to implement in real-world general-purpose operating systems because the exact length of the next CPU burst cannot be known in advance (it can only be estimated using exponential averaging of past bursts).
+
+---
+
 ## Summary Table
 
 ```
@@ -1180,4 +1260,5 @@ Modern OS (Linux, Windows) use complex multi-level feedback queues with sophisti
 - File Systems
 - Process Synchronization
 - Deadlocks
+
 

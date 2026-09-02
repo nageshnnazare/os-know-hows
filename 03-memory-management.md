@@ -2,20 +2,37 @@
 
 ## Table of Contents
 1. [Memory Hierarchy](#memory-hierarchy)
-2. [Address Binding](#address-binding)
-3. [Logical vs Physical Address](#logical-vs-physical-address)
-4. [Memory Allocation Strategies](#memory-allocation-strategies)
-5. [Paging](#paging)
-6. [Segmentation](#segmentation)
-7. [Virtual Memory](#virtual-memory)
-8. [Page Replacement Algorithms](#page-replacement-algorithms)
-9. [Thrashing](#thrashing)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Address Binding](#address-binding)
+4. [Logical vs Physical Address](#logical-vs-physical-address)
+5. [Memory Allocation Strategies](#memory-allocation-strategies)
+6. [Paging & Multi-Level Address Translation](#paging--multi-level-address-translation)
+7. [Page Table Entry (PTE) Flags](#page-table-entry-pte-flags)
+8. [Segmentation](#segmentation)
+9. [Virtual Memory & Page Fault Lifecycle](#virtual-memory--page-fault-lifecycle)
+10. [Worked Page Replacement Numerical Traces](#worked-page-replacement-numerical-traces)
+11. [Thrashing](#thrashing)
+12. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## Memory Hierarchy
 
 Computer systems have multiple levels of memory, organized by speed and size.
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Desk vs Main Library Stacks**
+> Imagine working on a research paper in a university library:
+> - **RAM (Physical Memory)** is the **Top of your Reading Desk**. You can only work on books currently sitting on your desk. Space is limited (e.g., max 4 books).
+> - **Virtual Memory** is your **Personal Catalog of Book Titles** (Logical Address Space). It allows you to pretend you have unlimited desk space.
+> - **Secondary Storage (Swap/Disk)** is the **Giant Storage Room** on the basement floor containing millions of books.
+> - A **Page Fault** occurs when you reach for a book listed in your catalog, but notice it isn't on your desk. You must pause writing, call the librarian (OS kernel), wait while they walk to the basement storage room to fetch the book, and place it on your desk. If your desk is full, you must push an old, unread book back to the basement first (**Page Replacement**).
+
+---
 
 ![The memory hierarchy](figures/memory-hierarchy.svg)
 
@@ -1371,6 +1388,55 @@ Advantages:
 
 ---
 
+## Worked Page Replacement Numerical Traces
+
+Let's evaluate a concrete example:
+- **Reference String**: `7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2`
+- **Number of Physical Frames**: `3`
+
+### 1. FIFO (First-In, First-Out)
+- Evicts the page that was loaded earliest.
+
+```
+Ref:   7  0  1  2  0  3  0  4  2  3  0  3  2
+F0:    7  7  7  2  2  2  2  4  4  4  0  0  0
+F1:    -  0  0  0  0  3  3  3  2  2  2  2  2
+F2:    -  -  1  1  1  1  0  0  0  3  3  3  3
+PF:    M  M  M  M  H  M  M  M  M  M  M  H  H   (M = Miss/Page Fault, H = Hit)
+
+Total Page Faults (FIFO) = 10
+```
+
+### 2. LRU (Least Recently Used)
+- Evicts the page that has not been accessed for the longest period of time.
+
+```
+Ref:   7  0  1  2  0  3  0  4  2  3  0  3  2
+F0:    7  7  7  2  2  2  2  4  4  4  0  0  0
+F1:    -  0  0  0  0  0  0  0  2  2  2  2  2
+F2:    -  -  1  1  1  3  3  3  3  3  3  3  3
+PF:    M  M  M  M  H  M  H  M  M  H  M  H  H
+
+Total Page Faults (LRU) = 8
+```
+
+---
+
+## Review Questions & Answers
+
+### Question 1: Given a 32-bit logical address space with a 4KB page size, calculate the number of entries in a single-level page table and why multi-level paging is required.
+**Answer**: 
+- Page size = $4\text{ KB} = 2^{12}\text{ bytes}$. Therefore, page offset = $12\text{ bits}$.
+- Logical address = $32\text{ bits}$. Page number bits = $32 - 12 = 20\text{ bits}$.
+- Number of page table entries = $2^{20} = 1,048,576\text{ entries}$.
+- If each Page Table Entry (PTE) is 4 bytes, a single process's page table requires $1,048,576 \times 4\text{ bytes} = 4\text{ MB}$ of **contiguous physical memory**.
+- With 100 running processes, this wastes 400 MB RAM just for page tables. Multi-level paging divides the page table into smaller 4KB pages so only active directory tables need to be kept in memory.
+
+### Question 2: What is Belady's Anomaly? Which page replacement algorithms suffer from it?
+**Answer**: **Belady's Anomaly** is the counter-intuitive phenomenon where increasing the number of allocated physical memory frames leads to an *increase* in the number of page faults for certain page replacement algorithms (such as **FIFO**). Stack-based algorithms (like **LRU** and **Optimal**) are mathematically proven to never suffer from Belady's Anomaly.
+
+---
+
 ## Summary
 
 - **Memory Hierarchy**: Registers → Cache → RAM → Disk (speed vs. size tradeoff)
@@ -1392,4 +1458,5 @@ Advantages:
 - File Systems
 - CPU Scheduling Algorithms
 - Synchronization and Deadlocks
+
 

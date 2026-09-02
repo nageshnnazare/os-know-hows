@@ -2,16 +2,32 @@
 
 ## Table of Contents
 1. [Security Goals](#security-goals)
-2. [Authentication](#authentication)
-3. [Access Control](#access-control)
-4. [Cryptography](#cryptography)
-5. [Security Threats](#security-threats)
-6. [Protection Mechanisms](#protection-mechanisms)
-7. [Security in Modern Systems](#security-in-modern-systems)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Authentication](#authentication)
+4. [Access Control](#access-control)
+5. [Buffer Overflow Exploits & OS Defenses](#buffer-overflow-exploits--os-defenses)
+6. [Cryptography](#cryptography)
+7. [Security Threats](#security-threats)
+8. [Protection Mechanisms](#protection-mechanisms)
+9. [Security in Modern Systems](#security-in-modern-systems)
+10. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## Security Goals
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Airport Security & Hotel Keycards**
+> - **Authentication ("Who are you?")**: Showing your official photo passport at the airport check-in counter to prove your identity.
+> - **Authorization ("What are you allowed to do?")**: The gate agent checking your boarding pass to confirm you are permitted to board Flight 402, but not Flight 109.
+> - **Principle of Least Privilege**: Hotel guests get keycards that only open their assigned bedroom door and the main elevator. Guests do not get master keys that unlock the manager's office or other guest rooms.
+> - **Buffer Overflow**: Imagine a paper feedback form with a small 20-character line for your name. If you write 500 characters, spill past the bottom of the page, and write instructions at the bottom saying "Grant this visitor administrative rights", a naïve system that blindly follows written text will execute your commands (**Smashing the Stack**).
+
+---
 
 ### CIA Triad
 
@@ -1137,6 +1153,54 @@ REGULAR ACTIVITIES:
 
 ---
 
+## Buffer Overflow Exploits & OS Defenses
+
+### Stack Frame Corruption Mechanics
+
+```
+Normal Stack Frame:
+High Memory ┌─────────────────────────┐
+            │ Function Arguments      │
+            ├─────────────────────────┤
+            │ Saved Return Addr (RIP) │  <-- Points to instruction after call
+            ├─────────────────────────┤
+            │ Saved Frame Ptr (RBP)   │
+            ├─────────────────────────┤
+            │ Buffer[64]              │  <-- Local array allocation
+Low Memory  └─────────────────────────┘
+
+Exploited Stack Frame (Unbounded `strcpy`):
+High Memory ┌─────────────────────────┐
+            │ Function Arguments      │
+            ├─────────────────────────┤
+            │ Malicious Address ──────┼───┐ (Overwritten RIP points to shellcode)
+            ├─────────────────────────┤   │
+            │ "AAAA" (Overwritten RBP)│   │
+            ├─────────────────────────┤   │
+            │ Shellcode Payload... <──────┘ (Injected machine code)
+Low Memory  └─────────────────────────┘
+```
+
+### OS Security Mitigations
+
+1. **ASLR (Address Space Layout Randomization)**: Randomizes the base memory addresses of stack, heap, libraries (`libc`), and executable code on every program run, preventing attackers from using fixed target addresses.
+2. **DEP / NX (Data Execution Prevention / No-Execute bit)**: Marks memory pages belonging to the stack and heap as Non-Executable (`NX`). If CPU attempts to execute instructions residing in the stack, a hardware trap occurs.
+3. **Stack Canaries**: Compiler inserts a random secret value (`canary`) between local buffers and the saved return address. Before returning, the function verifies if the canary is intact. If altered, the OS terminates the process (`*** stack smashing detected ***`).
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is the key difference between Discretionary Access Control (DAC) and Mandatory Access Control (MAC)?
+**Answer**: 
+- In **DAC** (e.g., standard Unix `chmod`), the file owner has full discretion to set read/write/execute permissions for others.
+- In **MAC** (e.g., SELinux / AppArmor), central security policies defined by the system administrator strictly constrain access based on clearance levels/labels. Even the owner of a file cannot grant access if prohibited by MAC policy.
+
+### Question 2: How does a hardware Trusted Platform Module (TPM) contribute to system boot integrity?
+**Answer**: TPM provides a secure cryptographic hardware chip that measures each stage of the boot sequence (BIOS/UEFI -> Bootloader -> OS Kernel) and hashes the code into Platform Configuration Registers (PCRs). If any boot component or kernel binary has been tampered with or infected by a rootkit, the PCR hash check fails, preventing disk decryption keys from being released (**Measured Boot / Secure Boot**).
+
+---
+
 ## Summary
 
 - **Security Goals**: CIA Triad (Confidentiality, Integrity, Availability)
@@ -1154,4 +1218,5 @@ Security is an ongoing process, not a one-time implementation!
 
 **Next Topic:**
 - Advanced Operating System Concepts
+
 

@@ -2,12 +2,15 @@
 
 ## Table of Contents
 1. [Process Concept](#process-concept)
-2. [Process States](#process-states)
-3. [Process Control Block](#process-control-block)
-4. [Process Operations](#process-operations)
-5. [Inter-Process Communication](#inter-process-communication)
-6. [Threads](#threads)
-7. [Process Scheduling](#process-scheduling)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Process States](#process-states)
+4. [Process Control Block](#process-control-block)
+5. [Process Operations & Copy-on-Write (COW)](#process-operations--copy-on-write-cow)
+6. [Inter-Process Communication](#inter-process-communication)
+7. [Threads](#threads)
+8. [Process Scheduling](#process-scheduling)
+9. [Practical Code Examples](#practical-code-examples)
+10. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
@@ -16,6 +19,21 @@
 ### What is a Process?
 
 A **process** is a program in execution. It is the unit of work in a modern operating system.
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Company vs Employees**
+> - A **Program** is like a **Recipe Book** lying on a bookshelf (static disk file).
+> - A **Process** is like a **Branch Office / Company** (has its own building/address space, legal registration, equipment).
+> - A **Thread** is like an **Employee** working inside that office.
+>   - Multiple employees (threads) inside the same office share the building's kitchen, printers, and whiteboards (**shared address space, global variables, open files**).
+>   - However, each employee has their own desk notepad and memory for current thoughts (**private register state and stack**).
+>   - Two separate companies (processes) cannot look at each other's whiteboards directly without formal communication channels (**IPC**).
+
+---
 
 **Program vs Process:**
 
@@ -963,6 +981,92 @@ I/O |                 ****|    ****
 
 ---
 
+## Practical Code Examples
+
+### 1. Process Creation with `fork()` and `waitpid()`
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        // Fork failed
+        perror("fork failed");
+        exit(1);
+    } else if (pid == 0) {
+        // Child Process
+        printf("Child Process: PID = %d, Parent PID = %d\n", getpid(), getppid());
+        execlp("ls", "ls", "-l", NULL); // Replace process image with 'ls'
+        // If execlp returns, an error occurred
+        perror("exec failed");
+        exit(1);
+    } else {
+        // Parent Process
+        printf("Parent Process: Child created with PID = %d\n", pid);
+        int status;
+        waitpid(pid, &status, 0); // Wait for specific child to finish
+        if (WIFEXITED(status)) {
+            printf("Child exited with status code: %d\n", WEXITSTATUS(status));
+        }
+    }
+    return 0;
+}
+```
+
+### 2. Inter-Process Communication with Anonymous Pipe
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
+
+int main() {
+    int pipefd[2]; // pipefd[0] = read end, pipefd[1] = write end
+    char buffer[100];
+
+    if (pipe(pipefd) == -1) {
+        perror("Pipe creation failed");
+        return 1;
+    }
+
+    pid_t pid = fork();
+
+    if (pid == 0) {
+        // Child process writes to pipe
+        close(pipefd[0]); // Close unused read end
+        char msg[] = "Hello from Child via Pipe!";
+        write(pipefd[1], msg, strlen(msg) + 1);
+        close(pipefd[1]);
+    } else {
+        // Parent process reads from pipe
+        close(pipefd[1]); // Close unused write end
+        read(pipefd[0], buffer, sizeof(buffer));
+        printf("Parent received message: '%s'\n", buffer);
+        close(pipefd[0]);
+    }
+    return 0;
+}
+```
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is Copy-on-Write (COW) and why is it crucial for process creation performance?
+**Answer**: Copy-on-Write is an optimization technique used during `fork()`. Instead of duplicating all physical memory pages of the parent process (which is slow and wastes RAM), parent and child processes share the same physical pages marked as **Read-Only**. Only when either process attempts to modify/write to a page does the CPU trigger a page fault, causing the OS to allocate a new physical page, copy the content, and mark it Read-Write for that process. This makes `fork()` almost instantaneous, especially when followed by `exec()`.
+
+### Question 2: What is the difference between an Orphan Process and a Zombie Process?
+**Answer**: 
+- **Zombie Process**: A process that has completed execution (`exit()`), but its entry remains in the process table because its parent hasn't yet called `wait()` to collect its termination status.
+- **Orphan Process**: A running child process whose parent terminated prematurely. Orphan processes are automatically adopted by the system init process (`systemd` / PID 1), which periodically reaps them when they finish.
+
+---
+
 ## Summary
 
 - **Process**: Program in execution with code, data, stack, heap, and PCB
@@ -979,7 +1083,9 @@ I/O |                 ****|    ****
 ---
 
 **Next Topics:**
+- Memory Management
 - CPU Scheduling Algorithms
 - Process Synchronization
 - Deadlocks
+
 

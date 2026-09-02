@@ -2,17 +2,41 @@
 
 ## Table of Contents
 1. [What is an Operating System?](#what-is-an-operating-system)
-2. [Goals and Functions](#goals-and-functions)
-3. [Types of Operating Systems](#types-of-operating-systems)
-4. [Operating System Structure](#operating-system-structure)
-5. [System Calls](#system-calls)
-6. [Operating System Services](#operating-system-services)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Goals and Functions](#goals-and-functions)
+4. [Types of Operating Systems](#types-of-operating-systems)
+5. [Operating System Structure](#operating-system-structure)
+6. [Hardware Support & Privilege Rings](#hardware-support--privilege-rings)
+7. [System Calls & Low-Level Register Flow](#system-calls--low-level-register-flow)
+8. [Operating System Services](#operating-system-services)
+9. [Kernel Concepts](#kernel-concepts)
+10. [Boot Process](#boot-process)
+11. [Interrupts and Traps](#interrupts-and-traps)
+12. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## What is an Operating System?
 
 An **Operating System (OS)** is system software that acts as an intermediary between computer hardware and the computer user. It manages hardware resources and provides services for application software.
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: The Restaurant Manager & Waiter**
+> Imagine a busy restaurant:
+> - **Hardware** (CPU, RAM, Disks) is the **Kitchen** (Chefs, Ovens, Ingredients).
+> - **User Applications** (Web Browser, Games) are the **Customers** sitting at dining tables.
+> - The **Operating System** is the **Restaurant Manager & Waiter**.
+>
+> Customers cannot walk directly into the kitchen and grab raw ingredients or use the oven—that would cause chaos, accidents, and ruined food. Instead, customers look at a **Menu** (the **System Call Interface**) and place an order with the **Waiter** (the **Kernel**). The waiter takes the request to the kitchen, ensures resources are allocated fairly, enforces hygiene and safety rules (security & isolation), and brings back the cooked dish (results).
+
+### Why Do We Need an OS?
+1. **Abstraction**: Applications don't need to know if your storage is an NVMe SSD or an old spinning hard disk; the OS provides a universal concept called a "File".
+2. **Protection & Isolation**: A buggy game shouldn't be able to crash your word processor or read your banking passwords from memory.
+3. **Resource Sharing**: If 10 apps are running on a 4-core CPU, the OS multiplexes time so all 10 apps appear to run simultaneously.
 
 ### ASCII Diagram: OS Position in Computer System
 
@@ -794,16 +818,86 @@ Low   └─────────────────┘
 
 ---
 
+## Hardware Support & Privilege Rings
+
+Modern CPUs provide hardware mechanisms to enforce dual-mode operation and memory protection:
+
+1. **Privilege Levels (Rings)**:
+   - x86 architecture defines 4 privilege rings (Ring 0 to Ring 3).
+   - **Ring 0 (Supervisor / Kernel Mode)**: Unrestricted access to hardware, I/O ports, and control registers.
+   - **Ring 3 (User Mode)**: Restrictive execution. Attempting privileged instructions triggers a General Protection Fault (`#GP`).
+2. **CPU Registers for Mode Control**:
+   - `CS` (Code Segment Register): The lowest 2 bits determine Current Privilege Level (`CPL`). `00` = Ring 0, `11` = Ring 3.
+   - `CR3` (Control Register 3): Points to the base physical address of the current page directory/table.
+   - `EFLAGS` / `RFLAGS`: Contains system flags like `IF` (Interrupt Flag).
+
+```
+x86 Privilege Rings:
+┌─────────────────────────────────────────┐
+│ Ring 3: User Applications               │
+│  ┌───────────────────────────────────┐  │
+│  │ Ring 2: Device Drivers (Unused)   │  │
+│  │  ┌─────────────────────────────┐  │  │
+│  │  │ Ring 1: OS Services (Unused)│  │  │
+│  │  │  ┌───────────────────────┐  │  │  │
+│  │  │  │ Ring 0: OS Kernel     │  │  │  │
+│  │  │  └───────────────────────┘  │  │  │
+│  │  └─────────────────────────────┘  │  │
+│  └───────────────────────────────────┘  │
+└─────────────────────────────────────────┘
+```
+
+---
+
+## System Calls & Low-Level Register Flow
+
+When a user process executes a system call like `write(1, "Hello", 5)`, the following low-level sequence occurs:
+
+```
+User Mode (Ring 3)                               Kernel Mode (Ring 0)
+┌─────────────────────────┐                      ┌───────────────────────────────┐
+│ Application calls       │                      │ Kernel Syscall Handler        │
+│ write(fd, buf, count)   │                      │ (e.g., sys_write)             │
+└────────────┬────────────┘                      └───────────────▲───────────────┘
+             │                                                   │
+             v                                                   │
+┌─────────────────────────┐                                      │
+│ C Library (libc) wrapper│                                      │
+│ - Store syscall # in RAX│                                      │
+│ - Store args in RDI,    │                                      │
+│   RSI, RDX              │                                      │
+└────────────┬────────────┘                                      │
+             │                                                   │
+             v                                                   │
+┌─────────────────────────┐    Hardware Exception/Trap           │
+│ Execute `syscall`       ├──────────────────────────────────────┘
+│ (or `int 0x80`)         │  - Switch CS:CPL from 3 to 0
+└─────────────────────────┘  - Save User RSP/RIP to Kernel Stack
+                             - Jump to address in IA32_LSTAR MSR
+```
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is the primary difference between a trap and a hardware interrupt?
+**Answer**: A **trap** (or software interrupt) is synchronous and caused by the currently executing instruction (e.g., system call, divide-by-zero, page fault). A **hardware interrupt** is asynchronous and generated by an external hardware device (e.g., keyboard input, network packet arrival, timer tick).
+
+### Question 2: Why must the CPU hardware switch mode bits when entering kernel mode?
+**Answer**: If mode bits were not enforced by hardware, user applications could bypass privilege restrictions, directly manipulate memory belonging to other applications or the kernel, access I/O ports, or disable timer interrupts, breaking security and stability.
+
+---
+
 ## Summary
 
-- Operating systems act as intermediaries between hardware and users
-- Core functions: Process management, memory management, file systems, I/O
-- Various types: Batch, Time-sharing, Real-time, Distributed, Network, Mobile
-- Structures: Monolithic, Layered, Microkernel, Modular
-- System calls provide interface for user programs to access kernel services
-- Kernel operates in privileged mode with full hardware access
-- Boot process initializes hardware and starts OS
-- Interrupts allow hardware and software to signal the CPU for attention
+- Operating systems act as intermediaries between hardware and users.
+- Core functions: Process management, memory management, file systems, I/O.
+- Various types: Batch, Time-sharing, Real-time, Distributed, Network, Mobile.
+- Structures: Monolithic, Layered, Microkernel, Modular.
+- System calls provide interface for user programs to access kernel services.
+- Kernel operates in privileged mode with full hardware access.
+- Boot process initializes hardware and starts OS.
+- Interrupts allow hardware and software to signal the CPU for attention.
 
 ---
 
@@ -812,4 +906,5 @@ Low   └─────────────────┘
 - Memory Management
 - CPU Scheduling
 - File Systems
+
 

@@ -2,19 +2,34 @@
 
 ## Table of Contents
 1. [Process Synchronization](#process-synchronization)
-2. [Critical Section Problem](#critical-section-problem)
-3. [Synchronization Hardware](#synchronization-hardware)
-4. [Semaphores](#semaphores)
-5. [Classic Synchronization Problems](#classic-synchronization-problems)
-6. [Monitors](#monitors)
-7. [Deadlocks](#deadlocks)
-8. [Deadlock Handling](#deadlock-handling)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Critical Section Problem](#critical-section-problem)
+4. [Peterson's Algorithm & Proof](#petersons-algorithm--proof)
+5. [Synchronization Hardware](#synchronization-hardware)
+6. [Semaphores](#semaphores)
+7. [Classic Synchronization Problems](#classic-synchronization-problems)
+8. [Monitors](#monitors)
+9. [Deadlocks & Coffman Conditions](#deadlocks--coffman-conditions)
+10. [Banker's Algorithm Worked Numerical Trace](#bankers-algorithm-worked-numerical-trace)
+11. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## Process Synchronization
 
 When multiple processes access shared data concurrently, data inconsistency may occur.
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Single-Key Bathroom & 4-Way Stop Sign**
+> - **Mutual Exclusion**: Think of a single-occupancy bathroom at a cafe. The key hangs on a hook (**Mutex / Binary Semaphore**). Only one customer (process) can take the key, enter the bathroom (**Critical Section**), lock the door, and return the key when done. If a second customer arrives while the door is locked, they must wait in line.
+> - **Counting Semaphore**: Think of a bowling alley with 10 pairs of shoes. The counter clerk tracks the available shoe count. Each bowler takes one pair (decrements count). When count hits 0, the next bowler waits until someone returns a pair (increments count).
+> - **Deadlock**: Imagine 4 cars arriving at a 4-way stop intersection at the exact same time from North, South, East, and West. Each driver yields to the car on their right. No car can move forward because everyone is waiting for someone else (**Circular Wait**).
+
+---
 
 ### Race Condition Example
 
@@ -1364,6 +1379,71 @@ Eventually P4 gets high enough priority
 
 ---
 
+## Banker's Algorithm Worked Numerical Trace
+
+Consider a system with 5 processes ($P_0$ to $P_4$) and 3 resource types ($A=10, B=5, C=7$):
+
+```
+Snapshot at Time T0:
+
+Allocation Matrix      Max Matrix            Need Matrix (Max - Alloc)
+    A  B  C               A  B  C                A  B  C
+P0  0  1  0            P0 7  5  3             P0 7  4  3
+P1  2  0  0            P1 3  2  2             P1 1  2  2
+P2  3  0  2            P2 9  0  2             P2 6  0  0
+P3  2  1  1            P3 2  2  2             P3 0  1  1
+P4  0  0  2            P4 4  3  3             P4 4  3  1
+
+Total Allocated: A = 7, B = 2, C = 5
+Available Vector = Total - Allocated = (10-7, 5-2, 7-5) = (3, 3, 2)
+```
+
+### Safety Algorithm Trace:
+1. **Work = (3, 3, 2)**, `Finish = [false, false, false, false, false]`.
+2. Check $P_0$: Need $(7, 4, 3) \le (3, 3, 2)$ ? **No** (Wait).
+3. Check $P_1$: Need $(1, 2, 2) \le (3, 3, 2)$ ? **Yes!**
+   - $P_1$ runs to completion.
+   - New Work = Work + Allocation = $(3, 3, 2) + (2, 0, 0) = (5, 3, 2)$.
+   - `Finish[P1] = true`.
+4. Check $P_3$: Need $(0, 1, 1) \le (5, 3, 2)$ ? **Yes!**
+   - $P_3$ runs to completion.
+   - New Work = $(5, 3, 2) + (2, 1, 1) = (7, 4, 3)$.
+   - `Finish[P3] = true`.
+5. Check $P_4$: Need $(4, 3, 1) \le (7, 4, 3)$ ? **Yes!**
+   - $P_4$ runs to completion.
+   - New Work = $(7, 4, 3) + (0, 0, 2) = (7, 4, 5)$.
+   - `Finish[P4] = true`.
+6. Check $P_0$: Need $(7, 4, 3) \le (7, 4, 5)$ ? **Yes!**
+   - $P_0$ runs to completion.
+   - New Work = $(7, 4, 5) + (0, 1, 0) = (7, 5, 5)$.
+   - `Finish[P0] = true`.
+7. Check $P_2$: Need $(6, 0, 0) \le (7, 5, 5)$ ? **Yes!**
+   - $P_2$ runs to completion.
+   - New Work = $(7, 5, 5) + (3, 0, 2) = (10, 5, 7)$.
+   - `Finish[P2] = true`.
+
+**Conclusion**: System is in a **Safe State** with Safe Sequence: $\langle P_1, P_3, P_4, P_0, P_2 \rangle$.
+
+---
+
+## Review Questions & Answers
+
+### Question 1: Name the four Coffman Conditions necessary for a deadlock to occur. How can breaking just one condition prevent deadlocks?
+**Answer**: 
+1. **Mutual Exclusion**: Resources cannot be shared simultaneously.
+2. **Hold and Wait**: A process holding resources can request additional resources without releasing current ones.
+3. **No Preemption**: Resources cannot be forcibly taken away from a process.
+4. **Circular Wait**: A closed chain of processes exists where each process holds resources needed by the next.
+
+Eliminating any single condition breaks the chain and makes deadlocks mathematically impossible (e.g., breaking **Circular Wait** by enforcing a strict global ordering on resource acquisition).
+
+### Question 2: What is the difference between Starvation and Livelock?
+**Answer**: 
+- **Starvation**: A process is indefinitely delayed because higher-priority processes continuously get resources first (the process remains blocked/waiting).
+- **Livelock**: Two or more processes actively change their internal states in response to each other, consuming CPU cycles without making any real forward execution progress (e.g., two polite people trying to step past each other in a hallway continuously moving side-to-side in sync).
+
+---
+
 ## Summary
 
 - **Synchronization**: Needed for shared data access
@@ -1388,4 +1468,5 @@ Synchronization and deadlock handling are critical for reliable multi-process sy
 - I/O Systems
 - Storage Management
 - Security and Protection
+
 

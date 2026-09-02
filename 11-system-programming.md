@@ -1417,6 +1417,16 @@ int main() {
 
 ---
 
+## Review Questions & Answers
+
+### Question 1: What is the purpose of `pthread_cond_wait()` taking a mutex pointer as its second argument?
+**Answer**: `pthread_cond_wait()` atomically releases the locked mutex and puts the calling thread to sleep on the condition variable. When the thread is woken up by `pthread_cond_signal()` or `pthread_cond_broadcast()`, it automatically re-acquires the mutex before returning. The atomic release-and-sleep prevents race conditions where a signal is sent between checking a predicate condition and sleeping ("lost wake-up").
+
+### Question 2: Why should `mmap()` be preferred over `read()` for accessing large random-access binary files?
+**Answer**: `mmap()` maps file pages directly into the process's virtual address space. Reading data dereferences pointers directly, avoiding user-kernel context switching and avoiding copying file data from kernel page cache into user-space buffers ("Zero-Copy" efficiency).
+
+---
+
 ## Summary
 
 - **POSIX API**: Standard interface for system programming
@@ -1436,4 +1446,5 @@ System programming requires careful error handling and understanding of underlyi
 - Performance Tuning and Monitoring
 - Debugging and Troubleshooting
 - Network Stack Deep Dive
+
 

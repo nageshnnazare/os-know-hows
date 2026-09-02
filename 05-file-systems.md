@@ -2,20 +2,36 @@
 
 ## Table of Contents
 1. [File Concept](#file-concept)
-2. [File Operations](#file-operations)
-3. [Directory Structure](#directory-structure)
-4. [File System Implementation](#file-system-implementation)
-5. [Allocation Methods](#allocation-methods)
-6. [Free Space Management](#free-space-management)
-7. [Directory Implementation](#directory-implementation)
-8. [File System Performance](#file-system-performance)
-9. [Recovery and Consistency](#recovery-and-consistency)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [File Operations](#file-operations)
+4. [Directory Structure](#directory-structure)
+5. [File System Implementation](#file-system-implementation)
+6. [Allocation Methods & Inode Block Math](#allocation-methods--inode-block-math)
+7. [Free Space Management](#free-space-management)
+8. [Directory Implementation](#directory-implementation)
+9. [File System Performance](#file-system-performance)
+10. [Recovery and Consistency](#recovery-and-consistency)
+11. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## File Concept
 
 A **file** is a named collection of related information stored on secondary storage.
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Office Filing Cabinet & Index Cards**
+> - **Hard Drive / Storage** is a giant physical **Filing Cabinet**.
+> - **Inodes** are **Library Index Cards**. Each card lists file owner, permissions, creation date, and exact drawer/slot numbers where the physical paper sheets are filed. Notice the file's human-readable name is *not* written on the index card!
+> - **Directories** are **Directories of Names**. A directory is simply a table mapping human-friendly names (e.g. `"resume.pdf"`) to specific Index Card Numbers (e.g. `Inode #45678`).
+> - **Hard Links** mean two different directory entries point to the *exact same* Index Card Number.
+> - **Symbolic Links (Symlinks)** are sticky notes that say "Look at folder B, file X instead".
+
+---
 
 ### File Attributes
 
@@ -1220,6 +1236,46 @@ If corrupt: Use redundancy to repair
 
 ---
 
+## Unix Inode Pointer Block Math
+
+Consider a classic Unix File System inode structure with:
+- **Block Size**: $4\text{ KB} = 4096\text{ bytes}$
+- **Block Pointer Size**: $4\text{ bytes}$ ($32\text{-bit}$ addresses)
+- **Pointers per Indirect Block**: $4096 / 4 = 1024\text{ pointers}$
+
+```
+Inode Structure:
+[Direct Pointer 0]   ──────> Data Block 0 (4 KB)
+[Direct Pointer 1]   ──────> Data Block 1 (4 KB)
+ ...
+[Direct Pointer 11]  ──────> Data Block 11 (4 KB)  ──> Total Direct = 12 x 4 KB = 48 KB
+
+[Single Indirect]    ──────> [Block of 1024 Pointers] ──> Total Single = 1024 x 4 KB = 4 MB
+
+[Double Indirect]    ──────> [Block of 1024 Pointers]
+                                │
+                                └──> 1024 x [Blocks of 1024 Pointers] ──> Total Double = 1024 x 1024 x 4 KB = 4 GB
+
+[Triple Indirect]    ──────> Total Triple = 1024 x 1024 x 1024 x 4 KB = 4 TB
+```
+
+**Max File Size Math**:
+$$\text{Max Size} = (12 \times 4\text{ KB}) + (1024 \times 4\text{ KB}) + (1024^2 \times 4\text{ KB}) + (1024^3 \times 4\text{ KB}) \approx 4.004\text{ TB}$$
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is the fundamental difference between a Hard Link and a Soft (Symbolic) Link?
+**Answer**: 
+- A **Hard Link** is a directory entry that points directly to the *same inode number* on disk. The physical data blocks remain on disk until *all* hard links to that inode are removed (link count drops to 0). Hard links cannot span across different filesystems.
+- A **Soft (Symbolic) Link** is a special file containing a text string representing the target file's path. It has its own unique inode. If the target file is deleted or moved, the soft link becomes broken ("dangling pointer"). Symlinks can point across different filesystems and directories.
+
+### Question 2: How does Write-Ahead Logging (Journaling) protect file system consistency against unexpected crash or power loss?
+**Answer**: Before modifying disk blocks directly, the file system writes the intended metadata (or data) changes sequentially to a dedicated, circular log buffer called the **Journal**. Once the journal write transaction is safely committed to disk, the OS updates the actual file system structures. If a power outage occurs during structural updates, the OS replays the completed journal transactions during boot, restoring consistency in seconds without needing a full disk scan (`fsck`).
+
+---
+
 ## Summary
 
 - **Files**: Named collections with attributes (metadata)
@@ -1242,4 +1298,5 @@ File systems are critical for persistent storage and continue to evolve with new
 - Synchronization and Deadlocks
 - I/O Systems
 - Security and Protection
+
 

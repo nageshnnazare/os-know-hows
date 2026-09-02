@@ -2,16 +2,30 @@
 
 ## Table of Contents
 1. [Distributed Operating Systems](#distributed-operating-systems)
-2. [Real-Time Operating Systems](#real-time-operating-systems)
-3. [Virtualization](#virtualization)
-4. [Cloud Computing](#cloud-computing)
-5. [Mobile Operating Systems](#mobile-operating-systems)
-6. [Embedded Systems](#embedded-systems)
-7. [Operating System Design](#operating-system-design)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [Real-Time Operating Systems](#real-time-operating-systems)
+4. [Virtualization](#virtualization)
+5. [Containers, Namespaces & Cgroups](#containers-namespaces--cgroups)
+6. [Cloud Computing](#cloud-computing)
+7. [Mobile Operating Systems](#mobile-operating-systems)
+8. [Embedded Systems](#embedded-systems)
+9. [Operating System Design](#operating-system-design)
+10. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## Distributed Operating Systems
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Full House Construction vs Shared Apartment Rooms**
+> - **Virtual Machines (VMs)**: Imagine building completely self-contained micro-houses inside a giant warehouse. Each micro-house has its own foundation, walls, plumbing, and furnace (**Guest OS Kernel**). It is extremely secure and isolated, but heavy and slow to build.
+> - **Containers**: Imagine taking a large apartment building (**Host Kernel**) and placing privacy partitions between rooms. Each tenant (**Container**) gets their own room key and private space (**Linux Namespaces**), and the landlord enforces electricity quotas (**Control Groups / Cgroups**). Containers share the same underlying building foundation and heating system, making them boot in milliseconds while taking up almost no extra weight.
+
+---
 
 ### Characteristics
 
@@ -1251,6 +1265,43 @@ Standard benchmarks:
 
 ---
 
+## Containers, Namespaces & Cgroups
+
+Containers are lightweight, isolated execution environments created using two core Linux kernel primitives:
+
+### 1. Linux Namespaces (Isolation)
+Namespaces restrict what a process can **see**:
+
+| Namespace | Isolated Resource | What it accomplishes |
+| :--- | :--- | :--- |
+| `pid` | Process IDs | Container process sees itself as PID 1, isolated from host PIDs. |
+| `net` | Network interfaces | Private IP address, loopback, routing tables, port bindings. |
+| `mnt` | Mount points | Isolated filesystem layout via `chroot` / `pivot_root`. |
+| `ipc` | Inter-Process Communication | Private POSIX message queues and shared memory segments. |
+| `uts` | Hostname | Dedicated hostname and domain name. |
+| `user` | User/Group IDs | Root inside container maps to an unprivileged user on host. |
+| `cgroup` | Control Group root | Hides host control group hierarchy. |
+
+### 2. Control Groups / Cgroups (Resource Control)
+Cgroups constrain what a process can **use**:
+- **CPU**: Quotas and CPU core pinning (e.g., max 2.0 CPU cores).
+- **Memory**: Hard RAM limits (e.g., max 512MB RAM; OOM killer triggers if exceeded).
+- **Block I/O**: Read/write IOPS and MB/s bandwidth limits on disk devices.
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is the main architectural difference between Type 1 (Bare-Metal) and Type 2 (Hosted) Hypervisors?
+**Answer**: 
+- **Type 1 Hypervisors** (e.g., VMware ESXi, KVM, Xen) run directly on physical server hardware without an underlying general-purpose OS. They offer higher performance and lower latency.
+- **Type 2 Hypervisors** (e.g., VirtualBox, VMware Workstation) run as application software on top of an existing host operating system (like Windows or macOS). They are easier to set up for desktop usage, but suffer from extra execution overhead.
+
+### Question 2: How does hardware-assisted memory virtualization (EPT / NPT) improve Virtual Machine performance?
+**Answer**: Without hardware support, hypervisors had to maintain expensive software "Shadow Page Tables" to translate Guest Virtual Addresses directly to Host Physical Addresses, trapping every page table modification. Hardware-assisted Extended Page Tables (EPT on Intel, NPT on AMD) allow the CPU MMU to automatically perform two-dimensional page walks in hardware, eliminating software hypervisor traps on page table updates.
+
+---
+
 ## Summary
 
 - **Distributed Systems**: Coordination, file systems, transactions across machines
@@ -1268,16 +1319,6 @@ Operating systems continue to evolve with hardware and application needs!
 
 ## Conclusion
 
-This completes the comprehensive Operating Systems documentation covering:
-1. Fundamentals and Introduction
-2. Process Management
-3. Memory Management
-4. CPU Scheduling
-5. File Systems
-6. Synchronization and Deadlocks
-7. I/O and Storage
-8. Security and Protection
-9. Advanced Topics
+This completes the comprehensive Operating Systems documentation covering all core and advanced modules.
 
-Each topic provides both theoretical foundations and practical implementations used in modern operating systems. The field continues to evolve with new technologies and paradigms!
 

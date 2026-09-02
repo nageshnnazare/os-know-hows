@@ -860,6 +860,16 @@ Or specify in fstab:
 
 ---
 
+## Review Questions & Answers
+
+### Question 1: What is the role of `initramfs` (Initial RAM File System) in the Linux boot process?
+**Answer**: `initramfs` is a small temporary root file system loaded into memory by the bootloader during early boot. It contains necessary device drivers (such as NVMe, RAID, or encrypted disk drivers) and scripts required to locate, mount, and pivot to the real root file system on disk (`pivot_root`).
+
+### Question 2: How does UEFI Secure Boot prevent unauthorized bootkit malware from running during system startup?
+**Answer**: Secure Boot uses a hierarchy of public-key certificates embedded in the motherboard firmware (Platform Key PK, Key Exchange Key KEK, Allowed Database db). At each step of the boot chain, the firmware cryptographically verifies the digital signature of the next executable binary (Bootloader, Kernel, Drivers). If an unsigned or tampered binary is detected, boot execution is halted immediately.
+
+---
+
 ## Summary
 
 - **Boot sequence**: Firmware → Boot loader → Kernel → Init → Services
@@ -879,4 +889,5 @@ Understanding boot process essential for system administration!
 ## Complete Operating Systems Tutorial Finished!
 
 Congratulations! You now have comprehensive documentation covering all aspects of operating systems from fundamentals to advanced topics, with practical examples and detailed diagrams.
+
 

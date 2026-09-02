@@ -2,16 +2,30 @@
 
 ## Table of Contents
 1. [I/O Hardware](#io-hardware)
-2. [I/O Software](#io-software)
-3. [I/O Performance](#io-performance)
-4. [Disk Structure](#disk-structure)
-5. [Disk Scheduling](#disk-scheduling)
-6. [RAID](#raid)
-7. [Solid State Drives (SSD)](#solid-state-drives-ssd)
+2. [Analogy & Beginner Intuition](#analogy--beginner-intuition)
+3. [I/O Software](#io-software)
+4. [I/O Performance](#io-performance)
+5. [Disk Structure](#disk-structure)
+6. [Disk Scheduling Worked Numerical Traces](#disk-scheduling-worked-numerical-traces)
+7. [RAID Architecture & Parity Math](#raid-architecture--parity-math)
+8. [Solid State Drives (SSD)](#solid-state-drives-ssd)
+9. [Review Questions & Answers](#review-questions--answers)
 
 ---
 
 ## I/O Hardware
+
+---
+
+## Analogy & Beginner Intuition
+
+> [!NOTE]
+> **Everyday Analogy: Mailbox vs Phone Ring vs Professional Delivery Courier**
+> - **Polling (Programmed I/O)**: You are expecting a package. Every 30 seconds, you stop working, walk out to the driveway, open the mailbox, look inside, and walk back. You waste 99% of your working day checking an empty box.
+> - **Interrupt-Driven I/O**: You stay at your desk working uninterrupted. When the mail carrier arrives, they ring your door chime (**Hardware Interrupt**). You pause for 5 seconds to sign the receipt, take the envelope, and return to work.
+> - **Direct Memory Access (DMA)**: You order 50 heavy furniture boxes. Instead of carrying each box inside yourself, you hire a **Delivery Freight Crew (DMA Controller)**. You hand them the keys to the warehouse, and return to your desk. The freight crew loads all 50 boxes directly into warehouse shelves (**RAM**) without disturbing you, and rings the bell once when all 50 boxes are unloaded.
+
+---
 
 ### I/O Devices
 
@@ -1360,6 +1374,41 @@ Update LBA 1:
 
 ---
 
+## Disk Scheduling Worked Numerical Traces
+
+Evaluate disk head movements for the following setup:
+- **Head Position**: Starts at Track `53`
+- **Track Bounds**: `0` to `199`
+- **Pending Request Queue**: `98, 183, 37, 122, 14, 124, 65, 67`
+
+### 1. FCFS (First-Come, First-Served)
+- Service sequence: `53 -> 98 -> 183 -> 37 -> 122 -> 14 -> 124 -> 65 -> 67`
+- Head movement calculations:
+  $$|98-53| + |183-98| + |37-183| + |122-37| + |14-122| + |124-14| + |65-124| + |67-65|$$
+  $$= 45 + 85 + 146 + 85 + 108 + 110 + 59 + 2 = \mathbf{640\text{ tracks}}$$
+
+### 2. SSTF (Shortest Seek Time First)
+- Service sequence (closest track at each step): `53 -> 65 -> 67 -> 37 -> 14 -> 98 -> 122 -> 124 -> 183`
+- Head movement calculations:
+  $$|65-53| + |67-65| + |37-67| + |14-37| + |98-14| + |122-98| + |124-122| + |183-124|$$
+  $$= 12 + 2 + 30 + 23 + 84 + 24 + 2 + 59 = \mathbf{236\text{ tracks}}$$
+
+### 3. SCAN (Elevator - Moving Towards 0 First)
+- Service sequence: `53 -> 37 -> 14 -> 0 (end) -> 65 -> 67 -> 98 -> 122 -> 124 -> 183`
+- Total head movement: $(53 - 0) + (183 - 0) = 53 + 183 = \mathbf{236\text{ tracks}}$
+
+---
+
+## Review Questions & Answers
+
+### Question 1: What is the main structural limitation of SSD NAND flash memory regarding overwriting existing data?
+**Answer**: In SSD NAND flash memory, reads and writes occur at the **Page level** (e.g., 4KB–16KB), but erasing can only occur at the larger **Block level** (e.g., 2MB–8MB). Data cannot be overwritten in place; an existing page must first be erased before new data can be written to it. To update a page, the SSD controller writes the new data to a fresh, clean physical page, updates its internal Logical Block Address (LBA) translation table, and marks the old page as "invalid". Later, **Garbage Collection** erases stale blocks.
+
+### Question 2: Why is C-LOOK generally preferred over standard SCAN (Elevator) disk scheduling?
+**Answer**: **C-LOOK (Circular LOOK)** reverses direction immediately after servicing the last request in the current direction, without traveling all the way to the physical edge of the disk platters (unlike SCAN). Furthermore, returning directly to the opposite end without servicing requests on the return sweep provides a much more uniform waiting time distribution across all cylinder tracks.
+
+---
+
 ## Summary
 
 - **I/O Hardware**: Polling, interrupts, DMA for device communication
@@ -1379,4 +1428,5 @@ I/O and storage systems are critical for system performance and reliability!
 **Next Topics:**
 - Security and Protection
 - Advanced Operating System Concepts
+
 
