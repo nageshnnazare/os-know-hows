@@ -15,7 +15,11 @@
 
 ### Linux Network Stack
 
-```
+![The TCP/IP protocol stack](figures/network-stack.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 APPLICATION LAYER
 +----------------------------------+
 | User Space Applications          |
@@ -50,7 +54,8 @@ APPLICATION LAYER
 | Physical Layer                   |
 | - Network Interface Card (NIC)   |
 +----------------------------------+
-```
+</code></pre>
+</details>
 
 ### Packet Flow
 
@@ -389,19 +394,23 @@ Sender can send up to 48 KB more
 
 ### Three-Way Handshake
 
-```
+![TCP three-way handshake](figures/tcp-handshake.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 CONNECTION ESTABLISHMENT:
 
 Client                          Server
   |                               |
   | SYN (seq=1000)                |
-  +------------------------------>|
+  +------------------------------&gt;|
   |                               | (Server allocates resources)
   | SYN-ACK (seq=5000, ack=1001)  |
-  |<------------------------------+
+  |&lt;------------------------------+
   |                               |
   | ACK (seq=1001, ack=5001)      |
-  +------------------------------>|
+  +------------------------------&gt;|
   |                               |
   | Connection established        |
   
@@ -420,7 +429,8 @@ $ tcpdump -i eth0 port 80
 
 MSS = MTU - IP header - TCP header
     = 1500 - 20 - 20 = 1460 bytes
-```
+</code></pre>
+</details>
 
 ### Data Transfer
 
@@ -501,22 +511,26 @@ cwnd
 
 ### Connection Termination
 
-```
+![TCP four-way connection termination](figures/tcp-termination.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 GRACEFUL CLOSE:
 
 Client                          Server
   |                               |
   | FIN (seq=1000)                |
-  +------------------------------>|
+  +------------------------------&gt;|
   |                               |
   |         ACK (ack=1001)        |
-  |<------------------------------+
+  |&lt;------------------------------+
   |                               |
   |         FIN (seq=5000)        |
-  |<------------------------------+
+  |&lt;------------------------------+
   |                               |
   | ACK (ack=5001)                |
-  +------------------------------>|
+  +------------------------------&gt;|
   |                               |
   | TIME_WAIT (2 × MSL)           |
   
@@ -527,7 +541,7 @@ ABORTIVE CLOSE:
 Client                          Server
   |                               |
   | RST                           |
-  +------------------------------>|
+  +------------------------------&gt;|
   |                               |
   | Connection immediately closed |
 
@@ -535,7 +549,8 @@ Causes:
 - Port not listening
 - Connection timeout
 - Application error
-```
+</code></pre>
+</details>
 
 ---
 

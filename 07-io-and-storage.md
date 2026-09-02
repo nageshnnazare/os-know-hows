@@ -183,7 +183,11 @@ Disadvantages:
 
 #### 3. Direct Memory Access (DMA)
 
-```
+![Direct memory access (DMA)](figures/dma.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 WITHOUT DMA:
 CPU reads from device, writes to memory
 (CPU involved in every byte transfer)
@@ -258,7 +262,8 @@ DMA MODES:
    DMA uses bus when CPU not using it
    No CPU degradation
    Slower transfer
-```
+</code></pre>
+</details>
 
 ---
 
@@ -266,7 +271,11 @@ DMA MODES:
 
 ### I/O Software Layers
 
-```
+![The layered I/O software stack](figures/io-software-layers.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 +---------------------------------------+
 | User-Level I/O Software               |
 | - Libraries (stdio, iostream)         |
@@ -300,7 +309,8 @@ DMA MODES:
 +---------------------------------------+
 | Hardware (Controllers, Devices)       |
 +---------------------------------------+
-```
+</code></pre>
+</details>
 
 ### Device Drivers
 
@@ -563,7 +573,11 @@ Advantages:
 
 ### Hard Disk Drive (HDD) Anatomy
 
-```
+![Anatomy of a hard disk drive](figures/hdd-anatomy.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 TOP VIEW:
                 Spindle
                   |
@@ -627,7 +641,8 @@ SECTOR (pizza slice):
         +-------+
 
 Each sector: Typically 512 bytes or 4096 bytes
-```
+</code></pre>
+</details>
 
 ### Disk Addressing
 
@@ -817,7 +832,11 @@ Disadvantages:
 
 ### SCAN (Elevator Algorithm)
 
-```
+![SCAN (elevator) disk scheduling](figures/disk-scheduling-scan.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 REQUEST QUEUE: 98, 183, 37, 122, 14, 124, 65, 67
 HEAD START: 53
 DIRECTION: Initially moving towards 0
@@ -842,7 +861,8 @@ Advantages:
 
 Disadvantages:
 - Long wait for requests just missed
-```
+</code></pre>
+</details>
 
 ### C-SCAN (Circular SCAN)
 
@@ -933,7 +953,11 @@ Modern drives:
 
 ### RAID Levels
 
-```
+![Common RAID levels](figures/raid-levels.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 RAID 0 (Striping - No Redundancy):
 
 File: [A][B][C][D][E][F][G][H]
@@ -1071,7 +1095,8 @@ Reliability: Can lose 1 disk per mirror
 
 Better than RAID 1 (performance)
 Better than RAID 5 (write performance)
-```
+</code></pre>
+</details>
 
 ### RAID Comparison
 

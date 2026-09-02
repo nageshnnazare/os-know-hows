@@ -427,7 +427,11 @@ Techniques:
 
 ### Types of Virtualization
 
-```
+![Type 1 vs Type 2 hypervisors](figures/virtualization-types.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 1. TYPE 1 (Bare Metal):
 
 +---------------------------------------+
@@ -485,7 +489,8 @@ Intel VT-x, AMD-V
 Special instructions for VM entry/exit
 Hardware handles privileged instructions
 Near-native performance
-```
+</code></pre>
+</details>
 
 ### Memory Virtualization
 
@@ -672,7 +677,11 @@ Management  SaaS > PaaS > IaaS (less work)
 
 ### Containers
 
-```
+![Containers vs virtual machines](figures/containers-vs-vms.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 CONTAINERS vs VMs:
 
 VIRTUAL MACHINES:
@@ -755,7 +764,8 @@ Deploy 10 replicas of web app
 Load balance across them
 Auto-scale based on load
 Auto-restart on failure
-```
+</code></pre>
+</details>
 
 ---
 
@@ -763,7 +773,11 @@ Auto-restart on failure
 
 ### Mobile OS Architecture
 
-```
+![Mobile OS architecture](figures/mobile-os-architecture.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 ANDROID:
 
 +-----------------------------------+
@@ -811,7 +825,8 @@ iOS:
 
 Closed ecosystem
 Strict app review process
-```
+</code></pre>
+</details>
 
 ### Mobile-Specific Features
 

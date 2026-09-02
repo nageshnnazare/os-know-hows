@@ -15,7 +15,11 @@
 
 ### CIA Triad
 
-```
+![The CIA triad](figures/cia-triad.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 +------------------+
 |                  |
 |  CONFIDENTIALITY |  Only authorized users can access data
@@ -50,7 +54,8 @@ AVAILABILITY:
   
   Example: Banking system uptime
   Violation: DoS attacks, system crashes
-```
+</code></pre>
+</details>
 
 ### Additional Security Goals
 
@@ -341,7 +346,11 @@ Advantages:
 
 ### Access Control Matrix
 
-```
+![Access-control matrix](figures/access-control-matrix.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 CONCEPT:
 
         Objects (Files)
@@ -398,7 +407,8 @@ Special bits:
 SUID (Set User ID): Execute as file owner
 SGID (Set Group ID): Execute as file group
 Sticky: Only owner can delete (for directories)
-```
+</code></pre>
+</details>
 
 ---
 
@@ -448,7 +458,11 @@ N users → N(N-1)/2 keys needed!
 
 ### Asymmetric Encryption
 
-```
+![Asymmetric (public-key) encryption](figures/asymmetric-encryption.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 CONCEPT:
 Public key (encryption) + Private key (decryption)
 
@@ -532,7 +546,8 @@ Client → Server:
 1. Exchange keys (RSA/ECC)
 2. Establish session key (AES key)
 3. Communicate with AES
-```
+</code></pre>
+</details>
 
 ### Hashing
 

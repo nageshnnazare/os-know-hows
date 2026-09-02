@@ -13,7 +13,11 @@
 
 ### Linux Architecture
 
-```
+![Linux architecture](figures/linux-architecture.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 +---------------------------------------------------+
 |               USER SPACE                          |
 |                                                   |
@@ -72,7 +76,8 @@
 +---------------------------------------------------+
 |               HARDWARE                            |
 +---------------------------------------------------+
-```
+</code></pre>
+</details>
 
 ### Linux Process Model
 
@@ -385,7 +390,11 @@ Crash recovery:
 
 ### Windows NT Structure
 
-```
+![Windows NT architecture](figures/windows-nt-structure.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 +---------------------------------------------------+
 |               USER MODE                           |
 |                                                   |
@@ -448,7 +457,8 @@ Crash recovery:
 +---------------------------------------------------+
 |               HARDWARE                            |
 +---------------------------------------------------+
-```
+</code></pre>
+</details>
 
 ### Windows Object Manager
 
@@ -951,7 +961,11 @@ Cannot be directly accessed
 
 ### Android Architecture
 
-```
+![Android software stack](figures/android-architecture.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 +---------------------------------------------------+
 |               APPS LAYER                          |
 |  +-------------------------------------------+   |
@@ -991,7 +1005,8 @@ Cannot be directly accessed
 |  | Display    | Camera     | Audio Drivers   |   |
 |  +-------------------------------------------+   |
 +---------------------------------------------------+
-```
+</code></pre>
+</details>
 
 ### Android Process Model
 

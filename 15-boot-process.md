@@ -15,7 +15,11 @@
 
 ### Complete Boot Process
 
-```
+![From power-on to a usable system](figures/boot-process.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 BOOT SEQUENCE:
 
 Power On
@@ -63,7 +67,8 @@ Timeline (typical):
 5-10s:  Init system (systemd)
 10-15s: Services start
 15s+:   Login prompt/Desktop
-```
+</code></pre>
+</details>
 
 ---
 
@@ -71,7 +76,11 @@ Timeline (typical):
 
 ### BIOS (Basic Input/Output System)
 
-```
+![Legacy BIOS vs UEFI](figures/bios-vs-uefi.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 BIOS ARCHITECTURE:
 
 +------------------+
@@ -128,7 +137,8 @@ $ sudo fdisk -l /dev/sda
 Device     Boot  Start      End     Sectors Size Id Type
 /dev/sda1        2048   1050623    1048576 512M 83 Linux
 /dev/sda2     1050624   5244927    4194304   2G 82 Linux swap
-```
+</code></pre>
+</details>
 
 ### UEFI (Unified Extensible Firmware Interface)
 

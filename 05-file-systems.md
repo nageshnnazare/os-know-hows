@@ -273,7 +273,11 @@ Path: /userA/file1
 
 ### Tree-Structured Directory
 
-```
+![Tree-structured directory](figures/directory-tree.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 ROOT (/)
   |
   +-- home/
@@ -310,7 +314,8 @@ Advantages:
 
 Current working directory concept:
 User at /home/user1/ can use relative paths
-```
+</code></pre>
+</details>
 
 ### Acyclic Graph Directory
 
@@ -450,11 +455,15 @@ DISK LAYOUT:
 
 ### File Control Block (FCB) / Inode
 
-```
+![Inode structure](figures/inode.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 UNIX INODE STRUCTURE:
 
 +----------------------------------+
-| File mode (type & permissions)   | 16 bits
+| File mode (type &amp; permissions)   | 16 bits
 +----------------------------------+
 | Link count                       | Number of hard links
 +----------------------------------+
@@ -500,7 +509,8 @@ Single indirect: 1024 × 4KB = 4 MB
 Double indirect: 1024 × 1024 × 4KB = 4 GB
 Triple indirect: 1024 × 1024 × 1024 × 4KB = 4 TB
 Total: ~4 TB
-```
+</code></pre>
+</details>
 
 ---
 
@@ -510,7 +520,11 @@ Total: ~4 TB
 
 Each file occupies contiguous blocks on disk.
 
-```
+![File allocation methods](figures/file-allocation.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 DISK:
 +-----+-----+-----+-----+-----+-----+-----+-----+-----+
 |  OS |file1|file1|file1|file2|file2|file3|file3|file3|
@@ -546,7 +560,8 @@ After deleting file2:
 +-----+-----+-----+-----+-----+-----+-----+-----+-----+
 
 Need compaction (expensive)
-```
+</code></pre>
+</details>
 
 ### 2. Linked Allocation
 
@@ -999,7 +1014,11 @@ CONSISTENCY CHECKING (fsck, chkdsk):
 
 Log-based recovery for crash consistency.
 
-```
+![Journaling file system](figures/journaling.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 JOURNALING:
 
 Without Journal:        With Journal:
@@ -1032,7 +1051,8 @@ With Journal:
              ↑
         On reboot: Replay journal
         System recovers automatically
-```
+</code></pre>
+</details>
 
 ### Types of Journaling
 

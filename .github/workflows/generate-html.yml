@@ -26,7 +26,7 @@ jobs:
           chmod +x htmler.sh
 
       - name: Generate index.html
-        run: ./htmler.sh -o index.html
+        run: ./htmler.sh -o index.html -x scripts -x figures
 
       - name: Commit index.html if changed
         run: |

@@ -74,7 +74,11 @@ A process transitions through various states during its lifetime.
 
 ### Five-State Process Model
 
-```
+![The five-state process model](figures/five-state-model.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
                         +-------+
                         | NEW   |  (Process being created)
                         +-------+
@@ -82,7 +86,7 @@ A process transitions through various states during its lifetime.
                             | admit
                             v
                         +-------+
-              +-------->| READY |  (Waiting for CPU)
+              +--------&gt;| READY |  (Waiting for CPU)
               |         +-------+
               |             |
               |             | dispatch (scheduler)
@@ -112,7 +116,8 @@ A process transitions through various states during its lifetime.
                             +------------+
                             | TERMINATED |  (Process finished)
                             +------------+
-```
+</code></pre>
+</details>
 
 ### State Descriptions
 
@@ -212,7 +217,11 @@ The PCB (also called Task Control Block) is a data structure that stores all inf
 
 When CPU switches from one process to another:
 
-```
+![Context switch between two processes](figures/context-switch.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Process P0 Executing                Process P1 Executing
 
     RUNNING                             RUNNING
@@ -236,10 +245,11 @@ Process P0 Executing                Process P1 Executing
        +------------------------------------+
        
 Timeline:
-|<-- P0 -->|<- Switch ->|<------ P1 ------>|<- Switch ->|<-- P0 -->|
+|&lt;-- P0 --&gt;|&lt;- Switch -&gt;|&lt;------ P1 ------&gt;|&lt;- Switch -&gt;|&lt;-- P0 --&gt;|
            Overhead                         Overhead
            (1-10 μs)                        (1-10 μs)
-```
+</code></pre>
+</details>
 
 **Context Switch Overhead**: Time spent saving and restoring process state (pure overhead).
 
@@ -400,7 +410,11 @@ Processes may need to communicate and synchronize with each other.
 
 ### IPC Models
 
-```
+![Shared memory vs message passing IPC](figures/ipc-models.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 1. SHARED MEMORY                2. MESSAGE PASSING
 
 Process A    Process B          Process A    Process B
@@ -419,7 +433,8 @@ Process A    Process B          Process A    Process B
 Fast (no kernel      Slower (kernel involvement)
 involvement after    but easier to implement
 setup)               and more portable
-```
+</code></pre>
+</details>
 
 ### 1. Shared Memory
 
@@ -636,7 +651,11 @@ A thread is a basic unit of CPU utilization; a lightweight process.
 
 ### Process vs Thread
 
-```
+![Processes vs threads](figures/process-vs-thread.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 PROCESS                          THREAD
 +---------------------------+    +-----------------+
 | Has own:                  |    | Shares with     |
@@ -660,17 +679,18 @@ Single-Threaded Process:         | - Registers     |
 
 Multi-Threaded Process:
 +---------------------------+
-| Stack | Stack | Stack     | <- One per thread
+| Stack | Stack | Stack     | &lt;- One per thread
 |-------|-------|-----------|
 |                           |
-|         Heap              | <- Shared
+|         Heap              | &lt;- Shared
 |                           |
-|         Data              | <- Shared
+|         Data              | &lt;- Shared
 |                           |
-|         Code              | <- Shared
+|         Code              | &lt;- Shared
 +---------------------------+
    T1      T2      T3
-```
+</code></pre>
+</details>
 
 ### Benefits of Multithreading
 
@@ -793,7 +813,11 @@ Two approaches to terminate a thread:
 
 The OS maintains various queues to manage processes.
 
-```
+![Process scheduling queues](figures/scheduling-queues.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
                           NEW PROCESSES
                                |
                                | admit
@@ -839,7 +863,8 @@ The OS maintains various queues to manage processes.
                           +----------+        |
                                               |
       All queues feed back to ready queue  ---+
-```
+</code></pre>
+</details>
 
 ### Queueing Diagram Detail
 

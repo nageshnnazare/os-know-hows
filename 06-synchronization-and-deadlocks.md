@@ -56,7 +56,11 @@ P1's update is lost!
 
 ### Producer-Consumer Problem
 
-```
+![Producer-consumer with a bounded buffer](figures/producer-consumer.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 SHARED BUFFER:
 +---+---+---+---+---+
 |   |   |   |   |   |  (size = 5)
@@ -84,7 +88,8 @@ Producer:  store R1, count (count = 6)  ← Overflow!
 Consumer:  store R2, count (count = 4)
 
 Buffer overflow or underflow!
-```
+</code></pre>
+</details>
 
 ---
 
@@ -791,7 +796,11 @@ Cycle in graph → Deadlock
 
 All four must hold simultaneously:
 
-```
+![The four necessary conditions for deadlock](figures/deadlock-conditions.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 1. MUTUAL EXCLUSION:
    At least one resource must be non-sharable
    
@@ -823,11 +832,16 @@ All four must hold simultaneously:
    P2 waits for P3
    ...
    Pn waits for P1
-```
+</code></pre>
+</details>
 
 ### Resource Allocation Graph
 
-```
+![Resource-allocation graph](figures/resource-allocation-graph.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 NOTATION:
   ○ Process
   □ Resource (with dots = instances)
@@ -879,7 +893,8 @@ Rule:
 - If no cycle → No deadlock
 - If cycle → Maybe deadlock
   (Deadlock if single-instance resources)
-```
+</code></pre>
+</details>
 
 ---
 
@@ -972,7 +987,11 @@ Use additional information about resource requests.
 
 #### Safe State
 
-```
+![Safe, unsafe, and deadlocked states](figures/bankers-safe-state.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 SAFE STATE:
 System can allocate resources to each process
 in some order and avoid deadlock
@@ -986,7 +1005,7 @@ P0          0         10      3
 P1          2          4
 P2          3          9
 
-Safe sequence: <P1, P0, P2>
+Safe sequence: &lt;P1, P0, P2&gt;
 
 Step 1: P1 runs
   P1 has 2, needs 4
@@ -1033,7 +1052,8 @@ Try P2: Has 2, needs 9, available 6
         Can get 4, needs 5 more (not enough!)
 
 No safe sequence → Unsafe state
-```
+</code></pre>
+</details>
 
 #### Banker's Algorithm
 

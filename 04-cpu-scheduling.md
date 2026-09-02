@@ -17,7 +17,11 @@
 
 Process execution consists of alternating CPU and I/O bursts.
 
-```
+![Alternating CPU and I/O bursts](figures/cpu-io-burst.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Process Execution Pattern:
 
 CPU Burst I/O Burst CPU Burst I/O Burst CPU Burst
@@ -41,7 +45,8 @@ I/O-Bound Process:
 +---+----+---+----+---+----+---+
 |CPU| I/O|CPU| I/O|CPU| I/O|CPU|
 +---+----+---+----+---+----+---+
-```
+</code></pre>
+</details>
 
 ### CPU Scheduler
 
@@ -440,7 +445,11 @@ Where K is aging factor
 
 Each process gets small time quantum; rotate through processes.
 
-```
+![Round-robin scheduling](figures/round-robin.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Process  Burst
   P1      24
   P2       3
@@ -475,7 +484,8 @@ P1: 30
 P2: 7
 P3: 10
 Average: (30 + 7 + 10)/3 = 15.67
-```
+</code></pre>
+</details>
 
 **Effect of Time Quantum:**
 
@@ -538,7 +548,11 @@ Optimal: Balance between response and overhead
 
 Multiple queues with different priorities and quanta.
 
-```
+![Multi-level feedback queue](figures/mlfq.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 MULTI-LEVEL FEEDBACK QUEUE EXAMPLE:
 
 Queue 0 (Highest Priority) - Quantum = 8ms
@@ -564,7 +578,8 @@ Rules:
 3. If process blocks or finishes before quantum, stays in same queue
 4. Higher queue has priority
 5. Process in lower queue runs only if higher queues empty
-```
+</code></pre>
+</details>
 
 **Example Execution:**
 
@@ -862,7 +877,11 @@ EDF is optimal: If any algorithm can schedule, EDF can
 
 ### Priority Inversion Problem
 
-```
+![Priority inversion](figures/priority-inversion.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Three processes:
 P1 (High priority)
 P2 (Medium priority)
@@ -895,7 +914,8 @@ When P3 holds resource needed by P1:
 - P3 temporarily inherits P1's priority
 - P3 can preempt P2
 - When P3 releases S, priority returns to normal
-```
+</code></pre>
+</details>
 
 ---
 

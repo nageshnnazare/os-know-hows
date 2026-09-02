@@ -17,13 +17,17 @@
 
 Computer systems have multiple levels of memory, organized by speed and size.
 
-```
+![The memory hierarchy](figures/memory-hierarchy.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
                     Faster, Smaller, More Expensive
                               ^
                               |
 +-------------------------------------------------------------+
 |  CPU REGISTERS                                              |
-|  - Fastest access (< 1 ns)                                  |
+|  - Fastest access (&lt; 1 ns)                                  |
 |  - Smallest size (bytes)                                    |
 +-------------------------------------------------------------+
                               |
@@ -59,7 +63,8 @@ Computer systems have multiple levels of memory, organized by speed and size.
                               |
                               v
                     Slower, Larger, Cheaper
-```
+</code></pre>
+</details>
 
 ### Memory Access Pattern
 
@@ -355,7 +360,11 @@ Not commonly used
 
 ### Fragmentation
 
-```
+![External fragmentation and compaction](figures/fragmentation.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 EXTERNAL FRAGMENTATION:
 +----------+
 | Process  |  Total free memory = 300 KB
@@ -382,7 +391,8 @@ INTERNAL FRAGMENTATION:
 |   Wasted (1 KB)      |  Partition size: 4 KB
 +----------------------+  Process size: 3 KB
                           Internal waste: 1 KB
-```
+</code></pre>
+</details>
 
 #### Solution: Compaction
 
@@ -454,7 +464,11 @@ Page Table (per process):
 
 ### Address Translation in Paging
 
-```
+![Address translation under paging](figures/paging-translation.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Logical Address (32-bit, 4KB pages):
 
 +----------------------+-------------------+
@@ -485,7 +499,8 @@ Offset = 8192 % 4096 = 0
 
 If Page Table[2] = Frame 1:
 Physical Address = (1 * 4096) + 0 = 4096
-```
+</code></pre>
+</details>
 
 ### Paging Hardware
 
@@ -539,7 +554,11 @@ For large address spaces, page table itself becomes too large.
 
 #### Two-Level Page Table
 
-```
+![Two-level page table](figures/two-level-page-table.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Logical Address (32-bit):
 +------------+------------+-----------+
 | P1 (10 bit)| P2 (10 bit)| d (12 bit)|
@@ -572,13 +591,18 @@ Advantages:
 - Page table can be paged itself
 - Don't need contiguous memory for page table
 - Can leave inner page tables unallocated if not needed
-```
+</code></pre>
+</details>
 
 ### Translation Lookaside Buffer (TLB)
 
 Cache for page table entries to speed up translation.
 
-```
+![The translation lookaside buffer (TLB)](figures/tlb.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
       CPU
        |
        | Logical Address
@@ -613,7 +637,8 @@ TLB Miss Time: 100 ns (access page table in memory)
 
 Effective Access Time (EAT):
 EAT = 0.99 * 1 + 0.01 * 100 = 1.99 ns (vs 100 ns without TLB)
-```
+</code></pre>
+</details>
 
 ### Page Table Entry (PTE) Structure
 
@@ -865,17 +890,21 @@ Page in memory? (Check Valid bit)
 
 ### Page Fault Handling
 
-```
+![Servicing a page fault](figures/page-fault.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Step-by-step:
 
 1. Process accesses page:
    +--------+
    | MOV AX,|
-   | [1000] |  <-- Address in page not in memory
+   | [1000] |  &lt;-- Address in page not in memory
    +--------+
 
 2. MMU generates page fault (trap):
-   User Mode -----> Kernel Mode
+   User Mode -----&gt; Kernel Mode
 
 3. OS handles page fault:
    a) Check if address is valid
@@ -885,7 +914,7 @@ Step-by-step:
    e) Set valid bit
 
 4. Resume process:
-   Kernel Mode -----> User Mode
+   Kernel Mode -----&gt; User Mode
    Restart instruction
 
 Effective Access Time with demand paging:
@@ -902,7 +931,8 @@ EAT = 0.999 * 100ns + 0.001 * 10ms
     
 Even 1 page fault per 1000 accesses increases time by 100x!
 Goal: Keep page fault rate very low
-```
+</code></pre>
+</details>
 
 ### Copy-on-Write (COW)
 
@@ -1063,7 +1093,11 @@ Time  Stack (top = most recent)
 
 Use reference bit, approximate LRU with less overhead.
 
-```
+![Second-chance (clock) page replacement](figures/clock-replacement.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 Circular Queue (Clock):
 
      R=1        R=0        R=1
@@ -1091,7 +1125,8 @@ Need to replace page, hand points to D:
 - B has R=0, replace B!
 
 "Second chance": Pages get R=1 set to R=0 before replacement
-```
+</code></pre>
+</details>
 
 ### 5. Enhanced Second Chance
 

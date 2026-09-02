@@ -16,7 +16,11 @@ An **Operating System (OS)** is system software that acts as an intermediary bet
 
 ### ASCII Diagram: OS Position in Computer System
 
-```
+![Where the operating system sits in the system](figures/os-position.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 +----------------------------------------------------------+
 |                     USER APPLICATIONS                    |
 |    (Web Browser, Text Editor, Games, Database, etc.)     |
@@ -37,7 +41,8 @@ An **Operating System (OS)** is system software that acts as an intermediary bet
 |                    COMPUTER HARDWARE                     |
 |    CPU  |  Memory  |  Disks  |  I/O Devices  |  etc.     |
 +----------------------------------------------------------+
-```
+</code></pre>
+</details>
 
 ---
 
@@ -276,7 +281,11 @@ MS-DOS was written to provide the most functionality in the least space.
 
 Everything runs in kernel mode with full access to hardware.
 
-```
+![Monolithic kernel vs microkernel](figures/monolithic-vs-microkernel.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
                  User Mode
 +--------------------------------------------------+
 |  Users  |  Shells  |  Applications  |  Compilers |
@@ -294,7 +303,8 @@ Everything runs in kernel mode with full access to hardware.
 +--------------------------------------------------+
 |                   HARDWARE                       |
 +--------------------------------------------------+
-```
+</code></pre>
+</details>
 
 **Advantages:**
 - Fast execution (no message passing overhead)
@@ -412,7 +422,11 @@ System calls provide an interface between a process and the operating system. Th
 
 ### System Call Mechanism
 
-```
+![A system call crossing the user/kernel boundary](figures/system-call.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
          USER MODE
 +---------------------------+
 |   User Application        |
@@ -454,7 +468,8 @@ System calls provide an interface between a process and the operating system. Th
 |   User Application        |
 |   (continues execution)   |
 +---------------------------+
-```
+</code></pre>
+</details>
 
 ### Types of System Calls
 
@@ -617,7 +632,11 @@ The **kernel** is the core component of an OS that has complete control over eve
 
 ### Kernel Mode vs User Mode
 
-```
+![User mode vs kernel mode](figures/user-kernel-mode.svg)
+
+<details class="ascii-diagram">
+<summary>ASCII diagram</summary>
+<pre><code>
 CPU Privilege Levels:
 
 Ring 0 (Kernel Mode)
@@ -641,7 +660,8 @@ Ring 3 (User Mode)
 | - Request services via         |
 |   system calls                 |
 +--------------------------------+
-```
+</code></pre>
+</details>
 
 ---
 
