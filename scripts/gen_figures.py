@@ -43,7 +43,7 @@ RULE = 1.5  # pt wide rules
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "fonts", "Virgil.woff2")
+                         "fonts", "JetBrainsMonoNerdFont-Regular.woff2")
 _FACE_CACHE = {}
 
 
